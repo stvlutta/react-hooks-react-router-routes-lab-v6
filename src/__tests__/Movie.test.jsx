@@ -37,10 +37,20 @@ test("renders a span for each genre", async () => {
   render(<RouterProvider router={router} />);
   const genres = ["Action", "Adventure", "Fantasy"];
   
+  // Wait for the component to load
+  await screen.findByText("Doctor Strange");
+  
+  // Using getAllByText to find all genre spans at once
+  const spans = await screen.findAllByRole("generic", { name: "" });
+  
+  // Check that we have at least the number of spans we expect
+  expect(spans.length).toBeGreaterThanOrEqual(genres.length);
+  
+  // Verify each genre is present in a span
   for (const genre of genres) {
-    const span = await screen.findByText(genre);
-    expect(span).toBeInTheDocument();
-    expect(span.tagName).toBe("SPAN");
+    const genreSpan = await screen.findByText(genre);
+    expect(genreSpan).toBeInTheDocument();
+    expect(genreSpan.tagName).toBe("SPAN");
   }
 });
 
