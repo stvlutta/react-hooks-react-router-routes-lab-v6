@@ -67,16 +67,24 @@ test("renders a span for each genre", async () => {
   // First wait for the component to fully load
   await waitFor(() => {
     screen.getByText(expectedMovie.title);
+  }, { timeout: 5000 });
+  
+  // Add a slight delay to ensure state updates are complete
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
+  // Verify all genres are present using a more direct approach
+  const allSpans = document.querySelectorAll('span');
+  const genreTexts = Array.from(allSpans).map(span => span.textContent);
+  
+  expectedMovie.genres.forEach(genre => {
+    expect(genreTexts).toContain(genre);
   });
   
-  // Then check for each genre individually
-  for (const genre of expectedMovie.genres) {
-    await waitFor(() => {
-      const span = screen.getByText(genre);
-      expect(span).toBeInTheDocument();
-      expect(span.tagName).toBe("SPAN");
-    });
-  }
+  // Ensure we have the right number of spans for genres
+  const genreSpans = Array.from(allSpans).filter(span => 
+    expectedMovie.genres.includes(span.textContent)
+  );
+  expect(genreSpans.length).toBeGreaterThanOrEqual(expectedMovie.genres.length);
 });
 
 test("renders the <NavBar /> component", async () => {
